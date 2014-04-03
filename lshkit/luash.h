@@ -1,8 +1,8 @@
 #include <lshkit.h>
 
 extern "C" {
-    Index *init(void);
+    void *init(void);
     int run(void);
-    void insert(Index *index, int i, float *data);
-    int query(Index *index, float *query);
+    void insert(void *index, int i, float *data);
+    int query(void *index, float *query);
 }

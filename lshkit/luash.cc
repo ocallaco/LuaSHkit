@@ -12,7 +12,7 @@ namespace po = boost::program_options;
 typedef Tail<RepeatHash<ThresholdingLsh> > MyLsh;
 typedef LshIndex<MyLsh, unsigned> Index;
 
-Index *init(void){
+void *init(void){
     
     string index_file = "./test.index";
 
@@ -67,18 +67,18 @@ Index *init(void){
         index->init(param, rng, L);
     }
 
-    return index;
+    return (void *)index;
 }
 
 
-void insert(Index *index, int i, float *data){
-    index->insert(i, data);
+void insert(void *index, int i, float *data){
+    ((Index *)index)->insert(i, data);
 }
 
-int query(Index *index, float *queryData){
+int query(void *index, float *queryData){
     metric::l1<float> l1(data.getDim());
     TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(accessor, l1, K, R);
-    index.query(queryData, query);
+    ((Index *)index)->query(queryData, query);
     return query.topk()[1].key;
 }
 
