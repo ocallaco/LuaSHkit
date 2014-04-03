@@ -8,7 +8,11 @@ using namespace std;
 using namespace lshkit;
 namespace po = boost::program_options; 
 
-void init(void *index_ptr){
+
+typedef Tail<RepeatHash<ThresholdingLsh> > MyLsh;
+typedef LshIndex<MyLsh, unsigned> Index;
+
+Index *init(void){
     
     string index_file = "./test.index";
 
@@ -18,13 +22,9 @@ void init(void *index_ptr){
     bool do_benchmark = true;
     bool use_index = false; // load the index from a file
 
-    typedef Tail<RepeatHash<ThresholdingLsh> > MyLsh;
-    typedef LshIndex<MyLsh, unsigned> Index;
-
-    metric::l1<float> l1(data.getDim());
+    
     FloatMatrix::Accessor accessor(data);
-    Index index;
-    index_ptr = (void*) index
+    Index *index = new Index();
 
     bool index_loaded = false;
 
@@ -34,7 +34,7 @@ void init(void *index_ptr){
             is.exceptions(ios_base::eofbit | ios_base::failbit | ios_base::badbit);
             cout << "LOADING INDEX..." << endl;
             timer.restart();
-            index.load(is);
+            index->load(is);
             BOOST_VERIFY(is);
             cout << boost::format("LOAD TIME: %1%s.") % timer.elapsed() << endl;
             index_loaded = true;
@@ -64,21 +64,25 @@ void init(void *index_ptr){
         param.dim = data.getDim();
         DefaultRng rng;
 
-        index.init(param, rng, L);
-        // The accessor.
+        index->init(param, rng, L);
+    }
 
-        // Initialize the index structure.  Note L is passed here.
-        cout << "CONSTRUCTING INDEX..." << endl;
-
-        timer.restart();
-        {
-            boost::progress_display progress(data.getSize());
-            for (unsigned i = 0; i < data.getSize(); ++i)
-            {
-                // Insert an item to the hash table.
-                // Note that only the key is passed in here.
-
+    return index;
 }
+
+
+void insert(Index *index, int i, float *data){
+    index->insert(i, data);
+}
+
+int query(Index *index, float *queryData){
+    metric::l1<float> l1(data.getDim());
+    TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(accessor, l1, K, R);
+    index.query(queryData, query);
+    return query.topk()[1].key;
+}
+
+
 
 int run(void)
 {
@@ -99,8 +103,6 @@ int run(void)
     FloatMatrix data(data_file);
     cout << "DONE" << endl;
 
-    typedef Tail<RepeatHash<ThresholdingLsh> > MyLsh;
-    typedef LshIndex<MyLsh, unsigned> Index;
 
     metric::l1<float> l1(data.getDim());
     FloatMatrix::Accessor accessor(data);
