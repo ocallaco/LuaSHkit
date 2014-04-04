@@ -4,7 +4,7 @@
 typedef struct {
     int dim;
     void *index;
-    FloatMatrix *data;    
+    lshkit::FloatMatrix *data;    
 } Environment;
 
 

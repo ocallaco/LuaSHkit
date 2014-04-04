@@ -1,4 +1,8 @@
 local ffi = require "ffi"
+
+require 'torchffi'
+
+
 ffi.cdef
 [[
     typedef void Environment;
@@ -11,11 +15,6 @@ local clib = ffi.load('./luash.so')
 local lshkit = ffi.load('./liblshkit.so')
 
 local similarityTable = torch.load('../../data/SimilarityTable.1.m')
-
-
-
-
-local index = clib.init()
 
 local N = similarityTable.public_vectors:size(1)
 local dim = similarityTable.public_vectors:size(2)
