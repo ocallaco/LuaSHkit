@@ -1,3 +1,7 @@
+#include <boost/program_options.hpp>
+#include <boost/progress.hpp>
+#include <boost/format.hpp>
+#include <boost/timer.hpp>
 #include <lshkit.h>
 
 typedef Tail<RepeatHash<ThresholdingLsh> > MyLsh;

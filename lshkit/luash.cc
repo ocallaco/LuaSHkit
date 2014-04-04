@@ -1,16 +1,10 @@
-#include <boost/program_options.hpp>
-#include <boost/progress.hpp>
-#include <boost/format.hpp>
-#include <boost/timer.hpp>
+
 #include "luash.h"
 
 using namespace std;
 using namespace lshkit;
 namespace po = boost::program_options; 
 
-
-typedef Tail<RepeatHash<ThresholdingLsh> > MyLsh;
-typedef LshIndex<MyLsh, unsigned> Index;
 
 Environment *init(int dim, int N, float *data_block){
 
