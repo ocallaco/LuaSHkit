@@ -12,7 +12,9 @@ namespace po = boost::program_options;
 typedef Tail<RepeatHash<ThresholdingLsh> > MyLsh;
 typedef LshIndex<MyLsh, unsigned> Index;
 
-void *init(void){
+float **data;
+
+void *init(int size){
     
     string index_file = "./test.index";
 
@@ -23,8 +25,8 @@ void *init(void){
     bool use_index = false; // load the index from a file
 
     
-    FloatMatrix::Accessor accessor(data);
     Index *index = new Index();
+    data = new (float *)[size]
 
     bool index_loaded = false;
 
@@ -71,12 +73,14 @@ void *init(void){
 }
 
 
-void insert(void *index, int i, float *data){
-    ((Index *)index)->insert(i, data);
+void insert(void *index, int i, float *dataline){
+    data[i] = dataline
+    ((Index *)index)->insert(i, dataline);
 }
 
 int query(void *index, float *queryData){
     metric::l1<float> l1(data.getDim());
+    FloatMatrix::Accessor accessor(data);
     TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(accessor, l1, K, R);
     ((Index *)index)->query(queryData, query);
     return query.topk()[1].key;
