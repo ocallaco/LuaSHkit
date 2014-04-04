@@ -1,5 +1,7 @@
 #include <lshkit.h>
 
+typedef Tail<RepeatHash<ThresholdingLsh> > MyLsh;
+typedef LshIndex<MyLsh, unsigned> Index;
 
 typedef struct {
     int dim;
