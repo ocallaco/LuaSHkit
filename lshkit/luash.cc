@@ -1,4 +1,7 @@
-
+#include <boost/program_options.hpp>
+#include <boost/progress.hpp>
+#include <boost/format.hpp>
+#include <boost/timer.hpp>
 #include "luash.h"
 
 using namespace std;
@@ -6,16 +9,19 @@ using namespace lshkit;
 namespace po = boost::program_options; 
 
 
+typedef Tail<RepeatHash<ThresholdingLsh> > MyLsh;
+typedef LshIndex<MyLsh, unsigned> Index;
+
 Environment *init(int dim, int N, float *data_block){
 
     Environment *env = new Environment;
 
     env->dim = dim;
-    env->index = new Index();
+    env->index = (void *) (new Index());
     env->data = new FloatMatrix(dim,N,data_block);
 
     FloatMatrix data = *(env->data);
-    Index index = *(env->index);
+    Index index = *((Index *)(env->index));
 
     string index_file = "./test.index";
 
@@ -68,7 +74,7 @@ int query(Environment *env, float *queryData){
     metric::l1<float> l1(data.getDim());
     FloatMatrix::Accessor accessor(data);
     TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(accessor, l1, K, R);
-    ((Index *)index)->query(queryData, query);
+    ((Index *)(env->index))->query(queryData, query);
 
     return query.topk()[1].key;
 }
