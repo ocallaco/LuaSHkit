@@ -26,5 +26,5 @@ data_tensor:cmul(multipliers:expandAs(data_tensor))
 
 local environ = clib.init(dim, N, torch.data(data_tensor))
 
-print(clib.query(environ, torch.data(data_tensor)))
+print(clib.query(environ, torch.data(data_tensor[44])))
 

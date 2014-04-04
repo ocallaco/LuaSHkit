@@ -71,15 +71,27 @@ Environment *init(int dim, int N, float *data_block){
 int query(Environment *env, float *queryData){
     float R =  numeric_limits<float>::max() ;
     unsigned K = 50;
-    
+
     FloatMatrix data = *(env->data);
+    
+    cout << data.getDim() << endl;
+    cout << flush;
 
     metric::l1<float> l1(data.getDim());
     FloatMatrix::Accessor accessor(data);
+    
     TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(accessor, l1, K, R);
-    ((Index *)(env->index))->query(queryData, query);
 
-    return query.topk()[1].key;
+    query.reset(queryData);
+    ((Index *)(env->index))->query(queryData, query);
+    
+    cout << "LAST" << endl;
+    cout << query.topk().recall(query.topk()) << endl;
+    cout << "ANSWER" << endl;
+    cout << query.topk()[0].key << endl;
+    cout << flush;
+
+    return 1;
 }
 
 
