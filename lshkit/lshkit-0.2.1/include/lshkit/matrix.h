@@ -90,6 +90,9 @@ public:
     /// Constructor, same as Matrix() followed immediately by reset().
     Matrix (int _dim, int _N) : dims(NULL) { reset(_dim, _N); }
 
+    /// Constructor for building matrix directly from data -- added by CONALL
+    Matrix (int _dim, int _N, T *_dims) : dim(_dim), N(_N), dims(_dims) {}
+
     /// Destructor.
     ~Matrix () { if (dims != NULL) delete[] dims; }
 

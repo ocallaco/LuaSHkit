@@ -12,10 +12,17 @@ namespace po = boost::program_options;
 typedef Tail<RepeatHash<ThresholdingLsh> > MyLsh;
 typedef LshIndex<MyLsh, unsigned> Index;
 
-float **data;
+Environment *init(int dim, int N, float *data_block){
 
-void *init(int size){
-    
+    Environment *env = new Environment;
+
+    env->dim = dim;
+    env->index = new Index();
+    env->data = new FloatMatrix(dim,N,data_block);
+
+    FloatMatrix data = *(env->data);
+    Index index = *(env->index);
+
     string index_file = "./test.index";
 
     float R =  numeric_limits<float>::max() ;
@@ -25,64 +32,50 @@ void *init(int size){
     bool use_index = false; // load the index from a file
 
     
-    Index *index = new Index();
-    data = new (float *)[size]
+    // We define a short name for the MPLSH index.
+    float min = numeric_limits<float>::max();
+    float max = -numeric_limits<float>::max();
 
-    bool index_loaded = false;
-
-    if (use_index) {
-        ifstream is(index_file.c_str(), ios_base::binary);
-        if (is) {
-            is.exceptions(ios_base::eofbit | ios_base::failbit | ios_base::badbit);
-            cout << "LOADING INDEX..." << endl;
-            timer.restart();
-            index->load(is);
-            BOOST_VERIFY(is);
-            cout << boost::format("LOAD TIME: %1%s.") % timer.elapsed() << endl;
-            index_loaded = true;
+    for (unsigned i = 0; i < data.getSize(); ++i) {
+        for (unsigned j = 0; j < data.getDim(); ++j) {
+            if (data[i][j] > max) max = data[i][j];
+            if (data[i][j] < min) min = data[i][j];
         }
     }
 
-    if (!index_loaded) {
-        cout << "NO INDEX" << endl;
-        // We define a short name for the MPLSH index.
-        float min = numeric_limits<float>::max();
-        float max = -numeric_limits<float>::max();
+    Index::Parameter param;
 
-        for (unsigned i = 0; i < data.getSize(); ++i) {
-            for (unsigned j = 0; j < data.getDim(); ++j) {
-                if (data[i][j] > max) max = data[i][j];
-                if (data[i][j] < min) min = data[i][j];
-            }
-        }
+    // Setup the parameters.  Note that L is not provided here.
+    param.range = H;
+    param.repeat = M;
+    param.min = min;
+    param.max = max;
+    param.dim = data.getDim();
+    DefaultRng rng;
 
-        Index::Parameter param;
+    index.init(param, rng, L);
 
-        // Setup the parameters.  Note that L is not provided here.
-        param.range = H;
-        param.repeat = M;
-        param.min = min;
-        param.max = max;
-        param.dim = data.getDim();
-        DefaultRng rng;
-
-        index->init(param, rng, L);
+    cout << "BUILDING THE INDEX" << endl;
+    for (unsigned i = 0; i < data.getSize(); ++i)
+    {
+        // Insert an item to the hash table.
+        // Note that only the key is passed in here.
+        // MPLSH will get the feature from the accessor.
+        index.insert(i, data[i]);
     }
+    cout << "DONE" << endl;
 
-    return (void *)index;
+    return env;
 }
 
-
-void insert(void *index, int i, float *dataline){
-    data[i] = dataline
-    ((Index *)index)->insert(i, dataline);
-}
-
-int query(void *index, float *queryData){
+int query(Environment *env, float *queryData){
+    float R =  numeric_limits<float>::max() ;
+    unsigned K = 50;
     metric::l1<float> l1(data.getDim());
     FloatMatrix::Accessor accessor(data);
     TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(accessor, l1, K, R);
     ((Index *)index)->query(queryData, query);
+
     return query.topk()[1].key;
 }
 

@@ -1,10 +1,10 @@
 local ffi = require "ffi"
 ffi.cdef
 [[
-    void *init(void);
-    int run(void);
-    void insert(void *index, int i, float *data);
-    int query(void *index, float *query);
+    typedef void Environment;
+    
+    Environment *init(int dim, int N, float *data_block);
+    int query(Environment *env, float *queryData);
 ]]
 
 local clib = ffi.load('./luash.so')
@@ -12,11 +12,20 @@ local lshkit = ffi.load('./liblshkit.so')
 
 local similarityTable = torch.load('../../data/SimilarityTable.1.m')
 
+
+
+
 local index = clib.init()
 
-for i=1,similarityTable.public_vectors:size(1) do
-   clib.insert(index, i, similarityTable.public_vectors[i] * similarityTable.public_multipliers[i])
-end
+local N = similarityTable.public_vectors:size(1)
+local dim = similarityTable.public_vectors:size(2)
 
-print(clib.query(index, similarityTable.public_vectors[44] * similarityTable.public_multipliers[44]))
+local data_tensor = torch.FloatTensor(dim * N):copy(similarityTable.public_vectors):resize(similarityTable.public_vectors:size())
+local multipliers = similarityTable.public_multipliers:resize(N,1)
+
+data_tensor:cmul(multipliers:expandAs(data_tensor))
+
+local environ = clib.init(dim, N, torch.data(data_tensor))
+
+print(clib.query(environ, torch.data(data_tensor)))
 
