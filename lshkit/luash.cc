@@ -88,7 +88,8 @@ int query(Environment *env, float *queryData){
     cout << "LAST" << endl;
     cout << query.topk().recall(query.topk()) << endl;
     cout << "ANSWER" << endl;
-    cout << query.topk()[0].key << endl;
+    cout << query.topk().size()<< endl;
+    cout << query.topk()[1].dist << endl;
     cout << flush;
 
     return 1;
