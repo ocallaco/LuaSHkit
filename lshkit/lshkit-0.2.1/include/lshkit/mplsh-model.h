@@ -22,7 +22,7 @@
 #include <fstream>
 #include <boost/math/distributions/gamma.hpp>
 #include <boost/math/distributions/normal.hpp>
-#include <lshkit/matrix.h>
+#include "matrix.h"
 
 /**
  * \file mplsh-model.h
@@ -77,6 +77,17 @@ public:
         std::ifstream is(path.c_str());
         is >> M >> G >> a_M >> b_M >> c_M
              >> a_G >> b_G >> c_G;
+    }
+    
+    DataParam( double m, double g, double a_m, double b_m, double c_m, double a_g, double b_g, double c_g ){
+	    this->M = m;
+	    this->G = g;
+	    this->a_M = a_m;
+	    this->b_M = b_m;
+	    this->c_M = c_m;
+	    this->a_G = a_g;
+	    this->b_G = b_g;
+	    this->c_G = c_g;
     }
     
     /// Estimate the global distance distribution.
@@ -210,7 +221,7 @@ public:
         }
     }
     
-    float lookup (float dist, int T) const
+    float lookup (float dist, int T)
     {
         unsigned d;
         if (dist < min_) return 1.0;
