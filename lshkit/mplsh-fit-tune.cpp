@@ -12,13 +12,13 @@
 
 #include <cstdlib>
 #include <gsl/gsl_multifit.h>
-#include "lshkit.h"
+#include <lshkit.h>
 
 using namespace std;
 using namespace lshkit;
 using namespace tr1;
 
-#include "lshkit/tune.h"
+#include <lshkit/tune.h>
 
 static const int MIN_L = 1;
 static const int MAX_L = 20;

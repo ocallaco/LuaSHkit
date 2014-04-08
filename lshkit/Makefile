@@ -12,7 +12,7 @@ lshkit:
 	cp lshkit-0.2.1/build/src/liblshkit.so .
 
 temp/luash.o: temp
-	$(CC) -c luash.cc -o $@ ${CFLAGS} ${INCLUDE}
+	$(CC) -c luash.cpp mplsh-fit-tune.cpp -o $@ ${CFLAGS} ${INCLUDE}
 
 luash.so: temp/luash.o lshkit
 	$(CC) -shared -o $@ temp/luash.o 
