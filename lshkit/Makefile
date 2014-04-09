@@ -1,5 +1,5 @@
 CC=g++
-INCLUDE=-Ilshkit-0.2.1/include/ -lgsl -lgslcblas
+INCLUDE=-Ilshkit-0.2.1/include/ -lgsl -lgslcblas -lliblshkit.so
 CFLAGS=-Wall -fPIC
 
 all: luash.so

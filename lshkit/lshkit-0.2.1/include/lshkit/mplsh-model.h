@@ -95,7 +95,9 @@ public:
     
     /// Estimate the global distance distribution.
     GammaDouble globalDist () const
+    
     {
+        std::cout << "Global Dist" << std::endl;
         return GammaDoubleMLE(M, G);
     }
 
