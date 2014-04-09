@@ -24,7 +24,12 @@ local multipliers = similarityTable.public_multipliers:resize(N,1)
 
 data_tensor:cmul(multipliers:expandAs(data_tensor))
 
+print("STARTING")
+
 local environ = clib.init(dim, N, torch.data(data_tensor))
+
+print("DONE")
+
 
 print(clib.query(environ, torch.data(data_tensor[44])))
 

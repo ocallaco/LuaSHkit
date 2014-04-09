@@ -17,8 +17,8 @@
 
 #include <cstdlib>
 #include <gsl/gsl_multifit.h>
-// #include <boost/program_options.hpp>
-// #include <boost/progress.hpp>
+#include <boost/program_options.hpp>
+#include <boost/progress.hpp>
 
 bool is_good_value (double v);
 bool constraint (const lshkit::tune::Input &x);
@@ -41,16 +41,16 @@ void mplsh_fit( const DATA& data, const METRIC& metric, int NN, double& param_M,
 	K = NN;// search for K nearest neighbors
 	F = 10;// divide the sample to F folds
 	
-	std::vector<unsigned> idx(data.size());
+	std::vector<unsigned> idx(data.getSize());
 	for (unsigned i = 0; i < idx.size(); ++i) idx[i] = i;
 	random_shuffle(idx.begin(), idx.end());
 
-	if (N > 0 && N < data.size()) idx.resize(N);
+	if (N > 0 && N < data.getSize()) idx.resize(N);
 
 	lshkit::DefaultRng rng;
 	rng.seed(0);//plant the same seed, always
 	boost::variate_generator<lshkit::DefaultRng &, lshkit::UniformUnsigned> gen(rng, lshkit::UniformUnsigned(0, idx.size()-1));
-
+    
 	double gM = 0.0;
 	double gG = 0.0;
 	{
@@ -74,7 +74,7 @@ void mplsh_fit( const DATA& data, const METRIC& metric, int NN, double& param_M,
 		gG /= P;
 		gG = exp(gG);
 	}
-
+    
   // TODO check that
 	// Custom
 	Q = (idx.size() > 1000)? 1000 : idx.size();// Added
@@ -86,13 +86,13 @@ void mplsh_fit( const DATA& data, const METRIC& metric, int NN, double& param_M,
 	
 	/* sample query */
 	std::vector<unsigned> qry(Q);
-
+    
 	lshkit::SampleQueries(&qry, idx.size(), rng);
 
 	/* do the queries */
 	std::vector<lshkit::Topk<unsigned> > topks(Q);
 	for (unsigned i = 0; i < Q; ++i) topks[i].reset(K);
-
+    
 	/* ... */
 	gsl_matrix *X = gsl_matrix_alloc(F * K, 3);
 	gsl_vector *yM = gsl_vector_alloc(F * K);
@@ -103,8 +103,8 @@ void mplsh_fit( const DATA& data, const METRIC& metric, int NN, double& param_M,
 
 	std::vector<double> M(K);
 	std::vector<double> G(K);
-
-	// boost::progress_display progress(F, cerr);
+    
+	boost::progress_display progress(F, std::cerr);
 	unsigned m = 0;
 	for (unsigned l = 0; l < F; l++)
 	{
@@ -139,12 +139,13 @@ void mplsh_fit( const DATA& data, const METRIC& metric, int NN, double& param_M,
 			M[k] = log(M[k]/Q);
 			G[k] /= Q;
 			gsl_matrix_set(X, m, 0, 1.0);
-			gsl_matrix_set(X, m, 1, log(double(data.size() * (l + 1)) / double(F)));
+			gsl_matrix_set(X, m, 1, log(double(data.getSize() * (l + 1)) / double(F)));
 			gsl_matrix_set(X, m, 2, log(double(k + 1)));
 			gsl_vector_set(yM, m, M[k]);
 			gsl_vector_set(yG, m, G[k]);
 			++m;
 		}
+        ++progress;
 	}
 
 	gsl_multifit_linear_workspace *work = gsl_multifit_linear_alloc(F * K, 3);
@@ -178,27 +179,29 @@ double mplsh_fit_tune( const DATA& data, const METRIC& metric, const int& L, con
 	/** ***************************/
 	/** ********** FIT  ***********/
 	/** ***************************/
-  //std::cout << "Fitting..." << std::endl;
+  std::cout << "Fitting..." << std::endl;
 	double param_M, param_G, param_a_M, param_b_M, param_c_M, param_a_G, param_b_G, param_c_G;
 	mplsh_fit( data, metric, K, param_M, param_G, param_a_M, param_b_M, param_c_M, param_a_G, param_b_G, param_c_G );
 	
-  //std::cout << param_M << "    " << param_G << std::endl;
-  //std::cout << param_a_M << "    " << param_b_M << "    " << param_c_M << std::endl;
-  //std::cout << param_a_G << "    " << param_b_G << "    " << param_c_G << std::endl;
+  std::cout << param_M << "    " << param_G << std::endl;
+  std::cout << param_a_M << "    " << param_b_M << "    " << param_c_M << std::endl;
+  std::cout << param_a_G << "    " << param_b_G << "    " << param_c_G << std::endl;
 	
 	/** ***************************/
 	/** ********** TUNE ***********/
 	/** ***************************/
-  //std::cout << "Tuning..." << std::endl;
-	return mplsh_tune(param_M, param_G, param_a_M, param_b_M, param_c_M, param_a_G, param_b_G, param_c_G, 
-                    data.size(), K, L, T, M, W, R );
-  //std::cout << "L = " << L;
-  //std::cout << "    " << "T = " << T;
-  //std::cout << "    " << "M = " << M;
-  //std::cout << "    " << "W = " << W;
-  //std::cout << "    " << "R = " << R;
-  //std::cout << "    " << "M = " << M;
-  //std::cout << std::endl;
+  std::cout << "Tuning..." << std::endl;
+	double cost = mplsh_tune(param_M, param_G, param_a_M, param_b_M, param_c_M, param_a_G, param_b_G, param_c_G, 
+                    data.getSize(), K, L, T, M, W, R );
+  std::cout << "L = " << L;
+  std::cout << "    " << "T = " << T;
+  std::cout << "    " << "M = " << M;
+  std::cout << "    " << "W = " << W;
+  std::cout << "    " << "R = " << R;
+  std::cout << "    " << "M = " << M;
+  std::cout << std::endl;
+
+  return cost;
 }
 
 #endif

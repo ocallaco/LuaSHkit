@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <gsl/gsl_multifit.h>
 #include <lshkit.h>
+#include <boost/tr1/memory.hpp>
 
 using namespace std;
 using namespace lshkit;
@@ -100,11 +101,15 @@ double mplsh_tune(const double& param_M, const double& param_G,
 	DataParam param( param_M, param_G, param_a_M, param_b_M, param_c_M, param_a_G, param_b_G, param_c_G );
 	double scale = param.scale();
 
+    cout << "NEW MODEL " << endl;
 	MultiProbeLshDataModel local_model(param, N, K);
+    cout << "DONE" << endl;
 	model = &local_model;
 
 	tune::Range range(intervals, intervals + sizeof intervals /sizeof intervals[0]);
+    cout << "TEST 1" << endl;
 	tune::Input input;
+    cout << "TEST 2" << endl;
 	bool ok = tune::Tune(range, constraint, &input);
 
 	if (ok) {

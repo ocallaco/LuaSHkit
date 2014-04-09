@@ -1,10 +1,12 @@
 #include <lshkit.h>
-
+#include <lshkit/matrix.h>
 
 typedef struct {
     int dim;
     void *index;
     lshkit::FloatMatrix *data;    
+    lshkit::FloatMatrix::Accessor *accessor;
+    lshkit::metric::l1<float> *metric;
 } Environment;
 
 
