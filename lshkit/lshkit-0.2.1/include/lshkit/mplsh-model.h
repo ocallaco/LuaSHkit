@@ -162,7 +162,6 @@ public:
         topkDists_(K, globalDist_)
     {
         std::cout << "new model" << std::endl;
-        std::cout << "global dist " << param.globalDist() << std::endl;
         globalDist_ = param.globalDist();
         for (unsigned k = 0; k < K; k++)
         {
