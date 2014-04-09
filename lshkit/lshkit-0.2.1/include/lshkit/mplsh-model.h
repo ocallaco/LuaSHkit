@@ -19,6 +19,7 @@
 #ifndef __LSHKIT_MPLSH_MODEL__
 #define __LSHKIT_MPLSH_MODEL__
 
+#include <iostream>
 #include <fstream>
 #include <boost/math/distributions/gamma.hpp>
 #include <boost/math/distributions/normal.hpp>
