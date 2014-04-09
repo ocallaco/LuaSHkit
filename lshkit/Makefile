@@ -1,5 +1,5 @@
 CC=g++
-INCLUDE=-Ilshkit-0.2.1/include/ -lgsl -lgslcblas -lliblshkit.so
+INCLUDE=-Ilshkit-0.2.1/include/ -lgsl -lgslcblas -lliblshkit
 CFLAGS=-Wall -fPIC
 
 all: luash.so
@@ -18,7 +18,7 @@ temp/luash.o: temp/mplsh-fit-tune.o temp
 	$(CC) -c luash.cpp -o $@ ${CFLAGS} ${INCLUDE}
 
 luash.so: temp/luash.o lshkit
-	$(CC) -shared -o $@ temp/*.o ${INCLUDE}
+	$(CC) ${INCLUDE} -shared -o $@ temp/*.o 
 
 clean:
 	rm -rf temp
