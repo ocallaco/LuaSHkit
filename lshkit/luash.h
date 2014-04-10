@@ -1,9 +1,11 @@
 #include <lshkit.h>
 #include <lshkit/matrix.h>
 
+typedef MultiProbeLshIndex<unsigned> Index;
+
 typedef struct {
     int dim;
-    void *index;
+    Index *index;
     lshkit::FloatMatrix *data;    
     lshkit::FloatMatrix::Accessor *accessor;
     lshkit::metric::l1<float> *metric;

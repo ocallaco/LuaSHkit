@@ -4,8 +4,8 @@ require 'torchffi'
 
 
 ffi.cdef
-[[
-    typedef void Environment;
+[[ 
+   typedef void Environment;
     
     Environment *init(int dim, int N, float *data_block);
     void query(Environment *env, int queryIndex);
