@@ -92,8 +92,8 @@ void tune(Environment *env){
 }
 
 int query(Environment *env, float *queryData){
-/*    float R =  numeric_limits<float>::max() ;
-    unsigned K = 50;
+    unsigned K = 10;
+    float R = 0.9;
 
     FloatMatrix data = *(env->data);
     
@@ -101,10 +101,10 @@ int query(Environment *env, float *queryData){
     cout << flush;
 
     
-    TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(accessor, l1, K, R);
+    TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(*(env->accessor), *(env->metric), K, R);
 
     query.reset(queryData);
-    ((Index *)(env->index))->query(queryData, query);
+    ((Index *)(env->index))->query(queryData, 5, query);
     
     cout << "LAST" << endl;
     cout << query.topk().recall(query.topk()) << endl;
@@ -112,7 +112,7 @@ int query(Environment *env, float *queryData){
     cout << query.topk().size()<< endl;
     cout << query.topk()[1].dist << endl;
     cout << flush;
-*/
+
     return 1;
 }
 
