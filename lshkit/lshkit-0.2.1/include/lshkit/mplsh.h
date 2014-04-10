@@ -330,6 +330,8 @@ public:
             for (unsigned j = 0; j < seq.size(); ++j) {
                 typename Super::Bin &bin = Super::tables_[i][seq[j]];
                 BOOST_FOREACH(Key key, bin) {
+                    std::cout << "CONALL" << std::endl;
+                    std::cout << key << std::endl;
                     scanner(key);
                 }
             }

@@ -91,28 +91,46 @@ void tune(Environment *env){
 
 }
 
-int query(Environment *env, float *queryData){
+void query(Environment *env, float *queryData){
     unsigned K = 10;
     float R = 0.9;
-
-    FloatMatrix data = *(env->data);
     
-    cout << data.getDim() << endl;
+    cout << "TEST 0" << endl;
     cout << flush;
 
+    //FloatMatrix data = *(env->data);
+    
+    cout << "TEST 1" << endl;
+    cout << flush;
+    //vector<float> *q = new vector<float>();      
+    //q->assign(queryData, queryData + data.getDim());
     
     TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(*(env->accessor), *(env->metric), K, R);
-
-    query.reset(queryData);
-    ((Index *)(env->index))->query(queryData, 5, query);
     
-    cout << "LAST" << endl;
-    cout << query.topk().recall(query.topk()) << endl;
-    cout << "ANSWER" << endl;
-    cout << query.topk().size()<< endl;
-    cout << query.topk()[1].dist << endl;
+    cout << "TEST 2" << endl;
     cout << flush;
 
-    return 1;
+    query.reset(queryData);
+    
+    cout << "TEST 3" << endl;
+    cout << flush;
+    
+    ((Index *)(env->index))->query(queryData, 5, query);
+    
+    cout << "TEST 4" << endl;
+    cout << flush;
+    
+//    cout << query.topk().recall(query.topk()) << endl;
+//    cout << "ANSWER" << endl;
+//    cout << query.topk().size()<< endl;
+//    cout << query.topk()[1].dist << endl;
+//    cout << flush;
+}
+
+void query(Environment *env, int queryIndex){
+//    FloatMatrix data = *(env->data);
+//    query(env, data[queryIndex]);
+    cout << "SOMETHING ELSE" << endl;
+    cout << flush;
 }
 

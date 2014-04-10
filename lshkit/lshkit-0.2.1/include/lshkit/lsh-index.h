@@ -167,8 +167,6 @@ public:
         for (unsigned i = 0; i < lshs_.size(); ++i) {
             unsigned index = lshs_[i](obj);
             BOOST_FOREACH(Key key, tables_[i][index]) {
-                std::cout << "CONALL" << std::endl;
-                std::cout << key << std::endl
                 scanner(key);
             }
         }

@@ -55,13 +55,9 @@ bool GammaDoubleMleTol (double first, double second)
 
 GammaDouble GammaDoubleMLE (double M, double G)
 {
-    std::cout << "GAMMADOUBLEMLE" << std::endl;
     GammaDoubleMleHelper hlp(G/M);
-    std::cout << "GAMMADOUBLEMLE helper ran" << std::endl;
     std::pair<double,double> pair = boost::math::tools::bisect(hlp, ABS_ERROR, MAX_SHAPE, GammaDoubleMleTol);
-    std::cout << "GAMMADOUBLEMLE pair" << std::endl;
     double k = (pair.first + pair.second) / 2.0;
-    std::cout << "GAMMADOUBLEMLE about to return" << std::endl;
     return GammaDouble(k, M/k);
 }
 

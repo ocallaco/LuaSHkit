@@ -12,5 +12,5 @@ typedef struct {
 
 extern "C" {
     Environment *init(int dim, int N, float *data_block);
-    int query(Environment *env, float *queryData);
+    void query(Environment *env, int queryIndex);
 }
