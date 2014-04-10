@@ -40,10 +40,8 @@ Environment *init(int dim, int N, float *data_block){
     if (is) {
         is.exceptions(ios_base::eofbit | ios_base::failbit | ios_base::badbit);
         cout << "LOADING INDEX..." << endl;
-        timer.restart();
         index->load(is);
         BOOST_VERIFY(is);
-        cout << boost::format("LOAD TIME: %1%s.") % timer.elapsed() << endl;
         index_loaded = true;
     }
 
@@ -104,6 +102,8 @@ Environment *init(int dim, int N, float *data_block){
         }
 
     }
+    cout << env << endl;
+    cout << env->data << endl;
     cout << "DONE" << endl;
 
     env->index = index;
@@ -138,21 +138,20 @@ void query(Environment *env, float *queryData){
     cout << "TEST 3" << endl;
     cout << flush;
     
-    (*(env->index))->query(queryData, 5, query);
+    (env->index)->query(queryData, 5, query);
     
     cout << "TEST 4" << endl;
     cout << flush;
     
-//    cout << query.topk().recall(query.topk()) << endl;
-//    cout << "ANSWER" << endl;
-//    cout << query.topk().size()<< endl;
-//    cout << query.topk()[1].dist << endl;
-//    cout << flush;
+    cout << query.topk().recall(query.topk()) << endl;
+    cout << "ANSWER" << endl;
+    cout << query.topk().size()<< endl;
+    cout << query.topk()[1].dist << endl;
+    cout << flush;
 }
 
 void query(Environment *env, int queryIndex){
-//    FloatMatrix data = *(env->data);
-//    query(env, data[queryIndex]);
+    query(env, (*(env->data))[queryIndex]);
     cout << "SOMETHING ELSE" << endl;
     cout << flush;
 }

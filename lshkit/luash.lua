@@ -27,14 +27,11 @@ print("STARTING")
 
 local environ = clib.init(dim, N, torch.data(data_tensor))
 
-print("DONE")
-
-collectgarbage("stop")
-for i=565,656 do
-   print("A")
-   io.flush()
-   clib.query(environ, i)
+--for i=565,656 do
+--   print("A")
+--   io.flush()
+   clib.query(environ, 454)
 --   print("B")
 --   io.flush()
-end
+--end
 

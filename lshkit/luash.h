@@ -1,7 +1,7 @@
 #include <lshkit.h>
 #include <lshkit/matrix.h>
 
-typedef MultiProbeLshIndex<unsigned> Index;
+typedef lshkit::MultiProbeLshIndex<unsigned> Index;
 
 typedef struct {
     int dim;
