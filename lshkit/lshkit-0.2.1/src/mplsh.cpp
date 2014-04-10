@@ -91,18 +91,17 @@ namespace lshkit
     {
         ProbeSequence scores;
         std::vector<unsigned> base;
+        scores.resize(2 * lsh_.size());
+        base.resize(lsh_.size());
 
         std::cout << "MPLSH.CPP 1" << std::endl;
         std::cout << std::flush;
 
-        scores.resize(2 * lsh_.size());
-        base.resize(lsh_.size());
-        
-        std::cout << "MPLSH.CPP 2" << std::endl;
-        std::cout << std::flush;
-
         for (unsigned i = 0; i < lsh_.size(); ++i)
         {
+        
+            std::cout << "MPLSH.CPP 2 " << i << std::endl;
+            std::cout << std::flush;
             float delta;
             base[i] = Super::lsh_[i](obj, &delta);
             scores[2*i].mask = i;
