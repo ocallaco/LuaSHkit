@@ -324,32 +324,12 @@ public:
     template <typename SCANNER>
     void query (Domain obj, unsigned T, SCANNER &scanner)
     {
-                    
-        std::cout << "TEST 1" << std::endl;
-        std::cout << std::flush;
         std::vector<unsigned> seq;
         for (unsigned i = 0; i < Super::lshs_.size(); ++i) {
-            std::cout << "TEST 2 " << i << std::endl;
-            std::cout << std::flush;
-
             Super::lshs_[i].genProbeSequence(obj, seq, T);
-
-            std::cout << "TEST 3 " << i << std::endl;
-            std::cout << std::flush;
-
             for (unsigned j = 0; j < seq.size(); ++j) {
-                
-                std::cout << "TEST 4 " << j << std::endl;
-                std::cout << std::flush;
-
                 typename Super::Bin &bin = Super::tables_[i][seq[j]];
-                
-                std::cout << "TEST 5 " << j << std::endl;
-                std::cout << std::flush;
-
                 BOOST_FOREACH(Key key, bin) {
-                    std::cout << "CONALL" << std::endl;
-                    std::cout << key << std::endl;
                     scanner(key);
                 }
             }

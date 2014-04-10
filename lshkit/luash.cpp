@@ -12,16 +12,11 @@ namespace po = boost::program_options;
 
 Environment *init(int dim, int N, float *data_block){
     Environment *env = new Environment;
-
-    cout << "DATA IS " << data_block[4096 * 453] << endl;
-
     env->dim = dim;
     Index *index = new Index();
     env->data = new FloatMatrix(dim,N,data_block);
 
     FloatMatrix *data = env->data;
-
-    cout << "MAKING SURE " << (*data)[454][0] << endl;
 
     env->metric = new metric::l1<float>(data->getDim());
     env->accessor = new FloatMatrix::Accessor(*data);
@@ -56,11 +51,7 @@ Environment *init(int dim, int N, float *data_block){
         double cost = -1;
         try
         {
-            cout << "TRYING HERE " << endl;
-            cout << flush;
             cost = mplsh_fit_tune(*(data), *(env->metric), L, T, M, W, R, K);
-            cout << "SUCCESS? " << endl;
-            cout << flush;
             default_M = M;
             default_W = W;
         }
@@ -106,8 +97,6 @@ Environment *init(int dim, int N, float *data_block){
         }
 
     }
-    cout << env << endl;
-    cout << env->data << endl;
     cout << "DONE" << endl;
 
     env->index = index;
@@ -122,39 +111,22 @@ void query(Environment *env, float *queryData){
     unsigned K = 10;
     float R = 0.9;
     
-    cout << "TEST 0 " << queryData[0]<< endl;
-    cout << flush;
-
-    cout << "TEST 1" << endl;
-    cout << flush;
     //vector<float> *q = new vector<float>();      
     //q->assign(queryData, queryData + data.getDim());
     
     TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(*(env->accessor), *(env->metric), K, R);
-    
-    cout << "TEST 2" << endl;
-    cout << flush;
 
     query.reset(queryData);
     
-    cout << "TEST 3" << endl;
-    cout << flush;
-    
     (env->index)->query(queryData, 5, query);
     
-    cout << "TEST 4" << endl;
-    cout << flush;
-    
     cout << query.topk().recall(query.topk()) << endl;
+
     cout << "ANSWER" << endl;
-    cout << query.topk().size()<< endl;
     cout << query.topk()[1].dist << endl;
-    cout << flush;
 }
 
 void query(Environment *env, int queryIndex){
     query(env, (*(env->data))[queryIndex]);
-    cout << "SOMETHING ELSE" << endl;
-    cout << flush;
 }
 
