@@ -65,7 +65,7 @@ Environment *init(int dim, int N, float *data_block){
         cout << "TUNING DONE!" << endl;
         cout << "cost " << cost << endl;
         cout << "L " << L << endl;
-        cout << "T" << T << endl;
+        cout << "T " << T << endl;
         cout << "M " << M << endl;
         cout << "W " << W << endl;
 
@@ -114,6 +114,9 @@ void query(Environment *env, float *queryData){
     //vector<float> *q = new vector<float>();      
     //q->assign(queryData, queryData + data.getDim());
     
+   // float* fakeQuery = new float[4096];
+
+    
     TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(*(env->accessor), *(env->metric), K, R);
 
     query.reset(queryData);
@@ -123,7 +126,10 @@ void query(Environment *env, float *queryData){
     cout << query.topk().recall(query.topk()) << endl;
 
     cout << "ANSWER" << endl;
-    cout << query.topk()[1].dist << endl;
+    for(int i = 0; i < K; i++){
+        cout << query.topk()[i].key << endl;
+        cout << query.topk()[i].dist << endl;
+    }
 }
 
 void query(Environment *env, int queryIndex){

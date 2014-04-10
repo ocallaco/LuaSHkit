@@ -23,8 +23,6 @@ local multipliers = similarityTable.public_multipliers:resize(N,1)
 
 data_tensor:cmul(multipliers:expandAs(data_tensor))
    
-print("DATA WILL BE ", data_tensor[454][1])
-
 print("STARTING")
 
 local environ = clib.init(dim, N, torch.data(data_tensor))
