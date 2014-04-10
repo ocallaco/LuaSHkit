@@ -13,14 +13,18 @@ namespace po = boost::program_options;
 Environment *init(int dim, int N, float *data_block){
     Environment *env = new Environment;
 
+    cout << "DATA IS " << data_block[4096 * 453] << endl;
+
     env->dim = dim;
     Index *index = new Index();
     env->data = new FloatMatrix(dim,N,data_block);
 
-    FloatMatrix data = *(env->data);
+    FloatMatrix *data = env->data;
 
-    env->metric = new metric::l1<float>(data.getDim());
-    env->accessor = new FloatMatrix::Accessor(data);
+    cout << "MAKING SURE " << (*data)[454][0] << endl;
+
+    env->metric = new metric::l1<float>(data->getDim());
+    env->accessor = new FloatMatrix::Accessor(*data);
     
     string index_file = "./test.index";
 
@@ -54,7 +58,7 @@ Environment *init(int dim, int N, float *data_block){
         {
             cout << "TRYING HERE " << endl;
             cout << flush;
-            cost = mplsh_fit_tune(*(env->data), *(env->metric), L, T, M, W, R, K);
+            cost = mplsh_fit_tune(*(data), *(env->metric), L, T, M, W, R, K);
             cout << "SUCCESS? " << endl;
             cout << flush;
             default_M = M;
@@ -79,18 +83,18 @@ Environment *init(int dim, int N, float *data_block){
         param.W = W;
         param.range = H; // See H in the program parameters.  You can just use the default value.
         param.repeat = M;
-        param.dim = data.getDim();
+        param.dim = data->getDim();
         DefaultRng rng;
 
         index->init(param, rng, L);
 
         cout << "BUILDING THE INDEX" << endl;
-        for (unsigned i = 0; i < data.getSize(); ++i)
+        for (unsigned i = 0; i < data->getSize(); ++i)
         {
             // Insert an item to the hash table.
             // Note that only the key is passed in here.
             // MPLSH will get the feature from the accessor.
-            index->insert(i, data[i]);
+            index->insert(i, (*data)[i]);
         }
 
         //Write the index
@@ -118,11 +122,9 @@ void query(Environment *env, float *queryData){
     unsigned K = 10;
     float R = 0.9;
     
-    cout << "TEST 0" << endl;
+    cout << "TEST 0 " << queryData[0]<< endl;
     cout << flush;
 
-    //FloatMatrix data = *(env->data);
-    
     cout << "TEST 1" << endl;
     cout << flush;
     //vector<float> *q = new vector<float>();      
