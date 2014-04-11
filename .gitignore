@@ -4,3 +4,4 @@ lshkit/lshkit-0.2.1/build/*
 *.index
 lshkit/temp
 *.so
+data
