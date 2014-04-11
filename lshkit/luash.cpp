@@ -21,7 +21,7 @@ Environment *init(int dim, int N, float *data_block, unsigned K, float R, bool d
     env->metric = new metric::l1<float>(data->getDim());
     env->accessor = new FloatMatrix::Accessor(*data);
     env->R = R;
-    evn->K = K;
+    env->K = K;
     env->dim = dim;
     
     string index_file = indexFile;

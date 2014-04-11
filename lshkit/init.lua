@@ -10,7 +10,6 @@ ffi.cdef
     void query(Environment *env, float *queryData, int *response);
 ]]
 
-local clib = ffi.load('./luash.so')
 
 local luash = {}
 
@@ -32,6 +31,8 @@ end
 
 luash.init = function(dataTensor, options)
   
+   local clib = ffi.load(options.libdir .. "luash.so")
+
    if not dataTensor then error("Must provide a data tensor") end
 
    options = options or {}
@@ -55,9 +56,9 @@ luash.init = function(dataTensor, options)
       end
    end
 
-   local environ = clib.init(dim, N, torch.data(dataTensor), 
-                             indexParams.K, indexParams.R, doTuning,
-                             indexParams.L, indexParams.T,
+   local environ = clib.init(options.dim, options.N, torch.data(dataTensor), 
+                             indexParams.K, indexParams.R, doTune,
+                             indexFile, indexParams.L, indexParams.T,
                              indexParams.M, indexParams.W)
 
    local index = {
@@ -70,7 +71,7 @@ luash.init = function(dataTensor, options)
 
          -- TODO: don't know what happens when we get no response... is it possible to get fewer than K results? 
          for i = 1,responseTensor:size()[1] do
-            table.insert(similar_indexes, responseTensor[i])
+            table.insert(similar_indexes, responseTensor[i] + 1)
          end
 
          return similar_indexes
