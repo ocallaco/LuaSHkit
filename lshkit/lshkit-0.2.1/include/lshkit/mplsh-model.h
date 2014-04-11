@@ -89,15 +89,12 @@ public:
 	    this->a_G = a_g;
 	    this->b_G = b_g;
 	    this->c_G = c_g;
-
-        std::cout << "SET PARAMS" << std::endl;
     }
     
     /// Estimate the global distance distribution.
     GammaDouble globalDist () const
     
     {
-        std::cout << "Global Dist" << std::endl;
         return GammaDoubleMLE(M, G);
     }
 
@@ -163,14 +160,11 @@ public:
         : MultiProbeLshModel(0,0,0,0), globalDist_(1.0),
         topkDists_(K, globalDist_)
     {
-        std::cout << "new model" << std::endl;
         globalDist_ = param.globalDist();
         for (unsigned k = 0; k < K; k++)
         {
-            std::cout << "TEST " << k << std::endl;
             topkDists_[k] = param.topkDist(N, k + 1);
         }
-        std::cout << "TEST" << std::endl;
     }
 
     double avgRecall () const;

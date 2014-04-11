@@ -1,7 +1,7 @@
 local ffi = require "ffi"
 
 require 'torchffi'
-
+local async = require 'async'
 
 ffi.cdef
 [[ 
@@ -27,11 +27,16 @@ print("STARTING")
 
 local environ = clib.init(dim, N, torch.data(data_tensor))
 
---for i=565,656 do
+local time = async.hrtime()
+for i=565,665 do
 --   print("A")
 --   io.flush()
-   clib.query(environ, 454)
+   clib.query(environ, i)
 --   print("B")
 --   io.flush()
---end
+end
+
+local second_time = async.hrtime()
+print("Completed 100 queries in ", (second_time - time) / 1000, " seconds")
+print((second_time - time) / 100, " ms per query")
 
