@@ -9,6 +9,12 @@ Some additional parts used from Regis Behmo's oNBNN to allow easier wrapping:
 
 https://github.com/regisb/onbnn
 
+Dependencies
+------------
+
+GSL
+Boost
+
 License
 -------
 
