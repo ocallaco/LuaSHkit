@@ -10,23 +10,23 @@ using namespace lshkit;
 namespace po = boost::program_options; 
 
 
-Environment *init(int dim, int N, float *data_block){
+Environment *init(int dim, int N, float *data_block, unsigned K, float R, bool doTuning, const char *indexFile, int L, int T, int M, float W){
     Environment *env = new Environment;
-    env->dim = dim;
     Index *index = new Index();
+    
     env->data = new FloatMatrix(dim,N,data_block);
 
     FloatMatrix *data = env->data;
 
     env->metric = new metric::l1<float>(data->getDim());
     env->accessor = new FloatMatrix::Accessor(*data);
+    env->R = R;
+    evn->K = K;
+    env->dim = dim;
     
-    string index_file = "./test.index";
+    string index_file = indexFile;
 
     unsigned H = 1017881;
-    unsigned K = 10;
-    int L = 3, T = 5;
-    float R =  0.9;
     int default_M = 15;
     float default_W = 11;
     
@@ -35,20 +35,24 @@ Environment *init(int dim, int N, float *data_block){
 
     bool index_loaded = false;
 
-    ifstream is(index_file.c_str(), ios_base::binary);
-    if (is) {
-        is.exceptions(ios_base::eofbit | ios_base::failbit | ios_base::badbit);
-        cout << "LOADING INDEX..." << endl;
-        index->load(is);
-        BOOST_VERIFY(is);
-        index_loaded = true;
+    if(!doTuning){
+        ifstream is(index_file.c_str(), ios_base::binary);
+        if (is) {
+            is.exceptions(ios_base::eofbit | ios_base::failbit | ios_base::badbit);
+            cout << "LOADING INDEX..." << endl;
+            index->load(is);
+            BOOST_VERIFY(is);
+            index_loaded = true;
+        }
     }
-
-    if (!index_loaded) {
-
-        int M = -1;
-        float W = -1;
+    else {
         double cost = -1;
+        
+        L = 3;
+        T = 5;
+        M = -1;
+        W = -1;
+
         try
         {
             cost = mplsh_fit_tune(*(data), *(env->metric), L, T, M, W, R, K);
@@ -68,8 +72,10 @@ Environment *init(int dim, int N, float *data_block){
         cout << "T " << T << endl;
         cout << "M " << M << endl;
         cout << "W " << W << endl;
+    }
 
 
+    if(!index_loaded){
         Index::Parameter param;
         param.W = W;
         param.range = H; // See H in the program parameters.  You can just use the default value.
@@ -95,44 +101,26 @@ Environment *init(int dim, int N, float *data_block){
             os.exceptions(ios_base::eofbit | ios_base::failbit | ios_base::badbit);
             index->save(os);
         }
-
     }
+
     cout << "DONE" << endl;
 
     env->index = index;
     return env;
 }
 
-void tune(Environment *env){
-
-}
-
-void query(Environment *env, float *queryData){
-    unsigned K = 10;
-    float R = 0.9;
-    
-    //vector<float> *q = new vector<float>();      
-    //q->assign(queryData, queryData + data.getDim());
-    
-   // float* fakeQuery = new float[4096];
-
+void query(Environment *env, float *queryData, int *response){
+    unsigned K = env->K;
+    float R = env->R;
     
     TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(*(env->accessor), *(env->metric), K, R);
 
     query.reset(queryData);
     
     (env->index)->query(queryData, 5, query);
-    
-    cout << query.topk().recall(query.topk()) << endl;
 
-    cout << "ANSWER" << endl;
     for(int i = 0; i < K; i++){
-        cout << query.topk()[i].key << endl;
-        cout << query.topk()[i].dist << endl;
+        response[i] = query.topk()[i].key;
     }
-}
-
-void query(Environment *env, int queryIndex){
-    query(env, (*(env->data))[queryIndex]);
 }
 
