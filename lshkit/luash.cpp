@@ -18,14 +18,12 @@ Environment *init(int dim, int N, float *data_block, unsigned K, float R, bool d
 
     FloatMatrix *data = env->data;
 
-    env->metric = new metric::l1<float>(data->getDim());
+    env->metric = new metric::l2<float>(data->getDim());
     env->accessor = new FloatMatrix::Accessor(*data);
     env->R = R;
     env->K = K;
     env->dim = dim;
     
-    string index_file = indexFile;
-
     unsigned H = 1017881;
     int default_M = 15;
     float default_W = 11;
@@ -36,7 +34,7 @@ Environment *init(int dim, int N, float *data_block, unsigned K, float R, bool d
     bool index_loaded = false;
 
     if(!doTuning){
-        ifstream is(index_file.c_str(), ios_base::binary);
+        ifstream is(indexFile, ios_base::binary);
         if (is) {
             is.exceptions(ios_base::eofbit | ios_base::failbit | ios_base::badbit);
             cout << "LOADING INDEX..." << endl;
@@ -48,8 +46,6 @@ Environment *init(int dim, int N, float *data_block, unsigned K, float R, bool d
     else {
         double cost = -1;
         
-        L = 3;
-        T = 5;
         M = -1;
         W = -1;
 
@@ -97,7 +93,7 @@ Environment *init(int dim, int N, float *data_block, unsigned K, float R, bool d
         //Write the index
         cout << "SAVING INDEX..." << endl;
         {
-            ofstream os(index_file.c_str(), ios_base::binary);
+            ofstream os(indexFile, ios_base::binary);
             os.exceptions(ios_base::eofbit | ios_base::failbit | ios_base::badbit);
             index->save(os);
         }
@@ -112,8 +108,10 @@ Environment *init(int dim, int N, float *data_block, unsigned K, float R, bool d
 void query(Environment *env, float *queryData, int *response){
     unsigned K = env->K;
     float R = env->R;
+
+    cout << "WTF?" << queryData[0] << endl;
     
-    TopkScanner<FloatMatrix::Accessor, metric::l1<float> > query(*(env->accessor), *(env->metric), K, R);
+    TopkScanner<FloatMatrix::Accessor, metric::l2<float> > query(*(env->accessor), *(env->metric), K, R);
 
     query.reset(queryData);
     
@@ -121,6 +119,7 @@ void query(Environment *env, float *queryData, int *response){
 
     for(int i = 0; i < K; i++){
         response[i] = query.topk()[i].key;
+        cout << query.topk()[i].key << endl;
     }
 }
 

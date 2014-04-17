@@ -19,6 +19,7 @@ temp/luash.o: lshkit temp/mplsh-fit-tune.o temp
 
 luash.so: lshkit temp/luash.o 
 	$(CC) -shared -o $@ temp/*.o ${INCLUDE}
+	cp *.so ../lib
 
 clean:
 	rm -rf temp

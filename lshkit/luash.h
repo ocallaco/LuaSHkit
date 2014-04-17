@@ -10,7 +10,7 @@ typedef struct {
     Index *index;
     lshkit::FloatMatrix *data;    
     lshkit::FloatMatrix::Accessor *accessor;
-    lshkit::metric::l1<float> *metric;
+    lshkit::metric::l2<float> *metric;
 } Environment;
 
 

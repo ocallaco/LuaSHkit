@@ -10,6 +10,7 @@ ffi.cdef
     void query(Environment *env, float *queryData, int *response);
 ]]
 
+torch.setdefaulttensortype("torch.FloatTensor")
 
 local luash = {}
 
@@ -22,10 +23,12 @@ luash.getDataTensor = function(similarityTable)
    local dim = similarityTable.public_vectors:size(2)
 
    local data_tensor = torch.FloatTensor(dim * N):copy(similarityTable.public_vectors):resize(similarityTable.public_vectors:size())
-   local multipliers = similarityTable.public_multipliers:resize(N,1)
+   local multipliers = torch.Tensor(similarityTable.public_multipliers)
+
+   multipliers:resize(N,1)
 
    data_tensor:cmul(multipliers:expandAs(data_tensor))
-
+   
    return data_tensor, similarityTable
 end
 
@@ -63,6 +66,7 @@ luash.init = function(dataTensor, options)
 
    local index = {
       query = function(queryTensor)
+         print("TEST", queryTensor[1])
          local responseTensor = torch.IntTensor(indexParams.K)
          
          local response = clib.query(environ, torch.data(queryTensor), torch.data(responseTensor));
