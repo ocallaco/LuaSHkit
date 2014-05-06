@@ -105,21 +105,19 @@ Environment *init(int dim, int N, float *data_block, unsigned K, float R, bool d
     return env;
 }
 
-void query(Environment *env, float *queryData, int *response){
+void query(Environment *env, float *queryData, int *response, float *dist){
     unsigned K = env->K;
     float R = env->R;
 
-    cout << "WTF?" << queryData[0] << endl;
-    
-    TopkScanner<FloatMatrix::Accessor, metric::l2<float> > query(*(env->accessor), *(env->metric), K, R);
+    TopkScanner<FloatMatrix::Accessor, metric::l2<float> > query(*(env->accessor), *(env->metric), K, numeric_limits<float>::max());
 
     query.reset(queryData);
     
-    (env->index)->query(queryData, 5, query);
+    (env->index)->query_recall(queryData, R, query);
 
     for(int i = 0; i < K; i++){
         response[i] = query.topk()[i].key;
-        cout << query.topk()[i].key << endl;
+        dist[i] = query.topk()[i].dist;
     }
 }
 

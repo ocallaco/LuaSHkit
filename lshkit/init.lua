@@ -7,7 +7,7 @@ ffi.cdef
     typedef void Environment;
     
     Environment *init(int dim, int N, float *data_block, unsigned K, float R, bool doTuning, const char *indexFile, int L, int T, int M, float W);
-    void query(Environment *env, float *queryData, int *response);
+    void query(Environment *env, float *queryData, int *response, float *dist);
 ]]
 
 torch.setdefaulttensortype("torch.FloatTensor")
@@ -66,19 +66,21 @@ luash.init = function(dataTensor, options)
 
    local index = {
       query = function(queryTensor)
-         print("TEST", queryTensor[1])
          local responseTensor = torch.IntTensor(indexParams.K)
+         local distTensor = torch.FloatTensor(indexParams.K)
          
-         local response = clib.query(environ, torch.data(queryTensor), torch.data(responseTensor));
+         local response = clib.query(environ, torch.data(queryTensor), torch.data(responseTensor), torch.data(distTensor));
 
          local similar_indexes = {}
+         local dists = {}
 
          -- TODO: don't know what happens when we get no response... is it possible to get fewer than K results? 
          for i = 1,responseTensor:size()[1] do
             table.insert(similar_indexes, responseTensor[i] + 1)
+            table.insert(dists, distTensor[i])
          end
 
-         return similar_indexes
+         return similar_indexes, dists
       end
    }
 
