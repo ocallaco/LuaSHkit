@@ -1,4 +1,4 @@
-package = "redis-async"
+package = "luashkit"
 version = "scm-0"
 
 source = {
