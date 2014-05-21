@@ -16,5 +16,5 @@ typedef struct {
 
 extern "C" {
     Environment *init(int dim, int N, float *data_block, unsigned K, float R, bool doTuning, const char *indexFile, int L, int T, int M, float W);
-    void query(Environment *env, float *queryData, int *response);
+    void query(Environment *env, float *queryData, int *response, float *dist);
 }
